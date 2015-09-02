@@ -1,0 +1,55 @@
+{
+    "appKeys": {
+        "KEY_LATITUDE": 1,
+        "KEY_LONGITUDE": 2,
+        "KEY_USEOLDDATA": 3,
+        "KEY_UTCh": 4
+    },
+    "capabilities": [
+        "location"
+    ],
+    "companyName": "kurtlawrence92@gmail.com",
+    "longName": "Astronomy App",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/Button_options_down.png",
+                "name": "BUTTON_ICON_DOWN",
+                "type": "png"
+            },
+            {
+                "file": "images/Button_options_middle.png",
+                "name": "BUTTON_ICON_MIDDLE",
+                "type": "png"
+            },
+            {
+                "file": "images/Button_options_up.png",
+                "name": "BUTTON_ICON_UP",
+                "type": "png"
+            },
+            {
+                "file": "images/Button_options.png",
+                "name": "BUTTON_OPTIONS_ICON",
+                "type": "pbi"
+            },
+            {
+                "file": "images/NewMoonNH_icon.png",
+                "menuIcon": true,
+                "name": "MENU_ICON",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "Astro App",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "4f2e6991-03f5-4680-afc1-b18a0881b7c7",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}

@@ -14,6 +14,21 @@
     "resources": {
         "media": [
             {
+                "file": "images/emptyImg.png",
+                "name": "EMPTY_BITMAP",
+                "type": "png"
+            },
+            {
+                "file": "images/trueNorthIcon.png",
+                "name": "TRUE_NORTH_ICON",
+                "type": "png"
+            },
+            {
+                "file": "images/magNorthIcon.png",
+                "name": "MAG_NORTH_ICON",
+                "type": "png"
+            },
+            {
                 "file": "images/Button_options_down.png",
                 "name": "BUTTON_ICON_DOWN",
                 "type": "png"
@@ -48,7 +63,7 @@
         "basalt"
     ],
     "uuid": "4f2e6991-03f5-4680-afc1-b18a0881b7c7",
-    "versionLabel": "1.0",
+    "versionLabel": "1.1",
     "watchapp": {
         "watchface": false
     }

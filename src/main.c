@@ -1,6 +1,6 @@
 #include <pebble.h>
 enum {
-	BUILD_NUMBER = 1,
+	BUILD_NUMBER = 2,
 	WINDOWnum_START = 0,
 	WINDOWnum_PLANET = 1,
 	WINDOWnum_MENU = 2,
@@ -40,6 +40,10 @@ static TextLayer *s_genericText5_layer;		// Declare another generic text layer t
 static TextLayer *s_genericText6_layer;		// Declare another generic text layer that can be used in various windows
 static BitmapLayer *s_planetScreenButtons_layer;		// Declare the bitmap layer for the buttons on the planet screen
 static GBitmap *s_buttons_bitmap;		// Declare the bitmap image that will be shown on the planet screen
+static BitmapLayer *s_compassType_layer;
+static GBitmap *s_magNorth_icon;
+static GBitmap *s_trueNorth_icon;
+static GBitmap *s_emptyNorth_icon;
 
 // Global variable declarations ------------------------------------------------------------------------------------------------------------------------------------------
 static uint8_t planetNumber;		// Declare the global variable signifying the planet number for calculation specifics, currently covering 0(Sun) - 7(Neptune)
@@ -69,7 +73,7 @@ static char *aboutBuffer;
 static char globalBuffer[7][39];			// The maximum is reached with the brightness screen
 static void setAboutBuffer() {
 	aboutBuffer = (char*)malloc(203);
-	strcpy(aboutBuffer, "Welcome to v1.0\nClick to continue -->\n\nAltitude is angle above the horizon, 0 deg is flush with watchface. Azimuth is bearing from North. Brightness is an inverse log scale, V is visible with naked eye.");
+	strcpy(aboutBuffer, "Welcome to v1.1\nClick to continue -->\n\nAltitude is angle above the horizon, 0 deg is flush with watchface. Azimuth is bearing from North. Brightness is an inverse log scale, V is visible with naked eye.");
 }
 
  // Small function to display values for debugging purposes -------------------------------------------------------------------------------------------------------------
@@ -108,8 +112,6 @@ static void switchHighlightLayer(TextLayer *beforeLayer, TextLayer *selectionLay
 	text_layer_set_text_color(afterLayer, GColorWhite);
 }
 static void start_window_appear (Window *window) {
-	//APP_LOG(APP_LOG_LEVEL_INFO, "Entered start window appear");
-	//dispVal((int)heap_bytes_used(), "Bytes used:");
 	// Setup the window's layout here
 	currentWindow = WINDOWnum_START;	
 	
@@ -172,6 +174,13 @@ static void planet_window_appear (Window *window) {
 	//bitmap_layer_set_compositing_mode(s_planetScreenButtons_layer, GCompOpAssign);
 	bitmap_layer_set_bitmap(s_planetScreenButtons_layer, s_buttons_bitmap);
 	
+	// Create the true/magnetic north label text layer
+	s_trueNorth_icon = gbitmap_create_with_resource(RESOURCE_ID_TRUE_NORTH_ICON);
+	s_magNorth_icon = gbitmap_create_with_resource(RESOURCE_ID_MAG_NORTH_ICON);
+	s_emptyNorth_icon = gbitmap_create_with_resource(RESOURCE_ID_EMPTY_BITMAP);
+	s_compassType_layer = bitmap_layer_create(GRect(1, 0, 40, 8));
+	bitmap_layer_set_background_color(s_compassType_layer, GColorClear);
+	
 	// Add child layers
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_lastCoord_layer));		// Add the last coords text layer to the planet window
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_belowCoord_layer));
@@ -181,6 +190,7 @@ static void planet_window_appear (Window *window) {
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_genericText4_layer));
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_genericText5_layer));
 	layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_planetScreenButtons_layer));
+	layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_compassType_layer));
 }
 static void planet_window_disappear (Window *window) {
 	//APP_LOG(APP_LOG_LEVEL_INFO, "Entered planet window disappear");
@@ -189,6 +199,10 @@ static void planet_window_disappear (Window *window) {
 	compass_service_unsubscribe();
 	accel_data_service_unsubscribe();
 	// Destroy the planet window text layers
+	gbitmap_destroy(s_trueNorth_icon);
+	gbitmap_destroy(s_magNorth_icon);
+	gbitmap_destroy(s_emptyNorth_icon);
+		bitmap_layer_destroy(s_compassType_layer);
 	gbitmap_destroy(s_buttons_bitmap);					// Destroy the Create21
 		bitmap_layer_destroy(s_planetScreenButtons_layer);
 	text_layer_destroy(s_genericText5_layer);		// Destroy the Create10
@@ -202,8 +216,6 @@ static void planet_window_disappear (Window *window) {
 	light_enable(false);
 }
 static void menu_window_appear (Window *window) {
-	//APP_LOG(APP_LOG_LEVEL_INFO, "Entered menu window appear");
-	//dispVal((int)heap_bytes_used(), "Bytes used:");
 	// Setup the window's layout here
 	currentWindow = WINDOWnum_MENU;
 	
@@ -219,8 +231,6 @@ static void menu_window_appear (Window *window) {
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_belowCoord_layer));
 }
 static void menu_window_disappear (Window *window) {
-	//APP_LOG(APP_LOG_LEVEL_INFO, "Entered menu window disappear");
-	//dispVal((int)heap_bytes_used(), "Bytes used:");
 	// Destroy any created text layers in the sister load
 	text_layer_destroy(s_belowCoord_layer);		// Create11
 	aboutBuffer = (char*)realloc(aboutBuffer, 1);		// Diminish the about buffer size
@@ -1141,6 +1151,11 @@ static void update_GPS() {
 static void compass_callback(CompassHeadingData heading) {
   if (heading.compass_status != CompassStatusDataInvalid) {
     updateCoordsDispLayer(DISPLAY_COMPASS, (360 - TRIGANGLE_TO_DEG((int)heading.true_heading)));
+		if (heading.is_declination_valid) {
+			bitmap_layer_set_bitmap(s_compassType_layer, s_trueNorth_icon);
+		} else {
+			bitmap_layer_set_bitmap(s_compassType_layer, s_magNorth_icon);
+		}
   } else {
     // Heading not available yet - Show calibration UI to user
     updateCoordsDispLayer(DISPLAY_COMPASS, 400);		// Display error value
@@ -1191,6 +1206,7 @@ static void up_click_handler (ClickRecognizerRef recognizer, void *context) {
 					// Currently displaying the compass, move to the incliniation display
 					updateCoordsDispLayer(DISPLAY_COMPASS, 400);
 					compass_service_unsubscribe();			// Unsubscribe from the compass service
+					bitmap_layer_set_bitmap(s_compassType_layer, s_emptyNorth_icon);
 					accel_data_service_subscribe(5, accel_data_handler);		// Subscribe to the accelerometer service
 					accel_service_set_sampling_rate(ACCEL_SAMPLING_25HZ);		// Set sampling rate to lowest setting
 					currentHeader = DISPLAY_INCLINATION;			// Now showing the inclination
@@ -1246,7 +1262,8 @@ static void middle_click_handler (ClickRecognizerRef recognizer, void *context) 
 			break;
 		case WINDOWnum_MENU:
 			update_GPS();		// Update GPS was selected
-			window_stack_pop(true);		// Pop the menu back to the planet window
+			window_stack_pop_all(false);		// Instead of popping just the menu window, pop all and push the planet window. This fixes a crashing issue when starting a new version
+			window_stack_push(s_planet_window, true);
 			populateAstronomyData(false);		// Update the values
 			break;
 		case WINDOWnum_BRIGHTNESS:

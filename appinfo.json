@@ -60,7 +60,8 @@
     "shortName": "Astro App",
     "targetPlatforms": [
         "aplite",
-        "basalt"
+        "basalt",
+	"chalk"
     ],
     "uuid": "4f2e6991-03f5-4680-afc1-b18a0881b7c7",
     "versionLabel": "1.1",

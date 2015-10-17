@@ -1,6 +1,6 @@
 #include <pebble.h>
 enum {
-	BUILD_NUMBER = 2,
+	BUILD_NUMBER = 10,
 	WINDOWnum_START = 0,
 	WINDOWnum_PLANET = 1,
 	WINDOWnum_MENU = 2,
@@ -113,8 +113,8 @@ static void switchHighlightLayer(TextLayer *beforeLayer, TextLayer *selectionLay
 }
 static void start_window_appear (Window *window) {
 	// Setup the window's layout here
-	currentWindow = WINDOWnum_START;	
-	
+	currentWindow = WINDOWnum_START;
+
 	// Create the layer that will sit below the coord banner --> Create3
 	s_belowCoord_layer = text_layer_create(GRect(0, 45, 144, 123));
 	typicalTextLayer(s_belowCoord_layer, 3);
@@ -122,7 +122,7 @@ static void start_window_appear (Window *window) {
 	// Fill the text now
 	strcpy(globalBuffer[0], "Update GPS -->\n\nUse old data -->");
 	text_layer_set_text(s_belowCoord_layer, globalBuffer[0]);
-	
+
 	// Add the child layers
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_lastCoord_layer));		// Add the last coords text layer to the start window
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_belowCoord_layer));
@@ -138,49 +138,49 @@ static void planet_window_appear (Window *window) {
 	//dispVal((int)heap_bytes_used(), "Bytes used:");
 	// Construct the planet window text layers -- the top layer is already created and filled
 	currentWindow = WINDOWnum_PLANET;
-	
+
 	// Create the layer that will sit below the coord banner and display the planet name --> Create4
 	s_belowCoord_layer = text_layer_create(GRect(0, 26, 133, 30));
 	typicalTextLayer(s_belowCoord_layer, 2);
 	text_layer_set_font(s_belowCoord_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-	
+
 	// Create the overlaid LHS labels text layer --> Create5
 	s_genericText1_layer = text_layer_create(GRect(0, 52, 67, 108));
 	typicalTextLayer(s_genericText1_layer, 2);
 	text_layer_set_font(s_genericText1_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-	
+
 	// Create the values LHS labels text layer --> Create6
 	s_genericText2_layer = text_layer_create(GRect(0, 62, 67, 98));
 	typicalTextLayer(s_genericText2_layer, 2);
 	text_layer_set_font(s_genericText2_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-	
+
 	// Create the brightness footer text layer --> Create7
 	s_genericText3_layer = text_layer_create(GRect(0, 125, 133, 24));
 	typicalTextLayer(s_genericText3_layer, 2);
-	
+
 	// Create the overlaid RHS labels text layer --> Create9
 	s_genericText4_layer = text_layer_create(GRect(67, 52, 66, 108));
 	typicalTextLayer(s_genericText4_layer, 2);
 	text_layer_set_font(s_genericText4_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-	
+
 	// Create the values RHS labels text layer --> Create10
 	s_genericText5_layer = text_layer_create(GRect(67, 62, 66, 98));
 	typicalTextLayer(s_genericText5_layer, 2);
 	text_layer_set_font(s_genericText5_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-	
+
 	// Create the button bitmap --> Create21
 	s_buttons_bitmap = gbitmap_create_with_resource(RESOURCE_ID_BUTTON_OPTIONS_ICON);
 	s_planetScreenButtons_layer = bitmap_layer_create(GRect(133,0,11,148));
 	//bitmap_layer_set_compositing_mode(s_planetScreenButtons_layer, GCompOpAssign);
 	bitmap_layer_set_bitmap(s_planetScreenButtons_layer, s_buttons_bitmap);
-	
+
 	// Create the true/magnetic north label text layer
 	s_trueNorth_icon = gbitmap_create_with_resource(RESOURCE_ID_TRUE_NORTH_ICON);
 	s_magNorth_icon = gbitmap_create_with_resource(RESOURCE_ID_MAG_NORTH_ICON);
 	s_emptyNorth_icon = gbitmap_create_with_resource(RESOURCE_ID_EMPTY_BITMAP);
 	s_compassType_layer = bitmap_layer_create(GRect(1, 0, 40, 8));
 	bitmap_layer_set_background_color(s_compassType_layer, GColorClear);
-	
+
 	// Add child layers
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_lastCoord_layer));		// Add the last coords text layer to the planet window
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_belowCoord_layer));
@@ -211,22 +211,22 @@ static void planet_window_disappear (Window *window) {
 	text_layer_destroy(s_genericText2_layer);		// Destroy the Create6
 	text_layer_destroy(s_genericText1_layer);		// Destroy Create5
 	text_layer_destroy(s_belowCoord_layer);		// Destroy Create4
-	
+
 	// Turn off the light
 	light_enable(false);
 }
 static void menu_window_appear (Window *window) {
 	// Setup the window's layout here
 	currentWindow = WINDOWnum_MENU;
-	
+
 	// Create the layer that will sit below the coord banner --> Create11
-	s_belowCoord_layer = text_layer_create(GRect(0, 0, 144, 168));
+	s_belowCoord_layer = text_layer_create(PBL_IF_RECT_ELSE(GRect(0, 0, 144, 168), GRect(35, 16, 125, 165)));     // DIFFERENT COORDS FOR ROUND FACE --> checked
 	typicalTextLayer(s_belowCoord_layer, 3);
-	text_layer_set_font(s_belowCoord_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28));
+	text_layer_set_font(s_belowCoord_layer, fonts_get_system_font(PBL_IF_RECT_ELSE(FONT_KEY_GOTHIC_28, FONT_KEY_GOTHIC_24)));
 	// Fill the text now
 	strcpy(globalBuffer[0], "Brightness ->\n\nUpdate GPS ->\n\nAbout ->");
 	text_layer_set_text(s_belowCoord_layer, globalBuffer[0]);
-	
+
 	// Add the child layers
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_belowCoord_layer));
 }
@@ -241,7 +241,7 @@ static void brightness_window_appear (Window *window) {
 	// Setup the window's layout here
 	currentWindow = WINDOWnum_BRIGHTNESS;
 	int textLayerHeights = 22;
-	
+
 	// Create the layer for mercury --> Create13
 	s_belowCoord_layer = text_layer_create(GRect(0, 0, 144, textLayerHeights));
 	typicalTextLayer(s_belowCoord_layer, 1);
@@ -264,7 +264,7 @@ static void brightness_window_appear (Window *window) {
 	// Create the layer for neptune --> Create19
 	s_genericText6_layer = text_layer_create(GRect(0, textLayerHeights * 6, 144, textLayerHeights));
 	typicalTextLayer(s_genericText6_layer, 1);
-	
+
 	// Add the child layers
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_belowCoord_layer));
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_genericText1_layer));
@@ -295,7 +295,7 @@ static float calc_d_JDate (uint32_t dateInCodeFormat, uint16_t timeInMinutes, in
   int16_t dayVar = dateInCodeFormat % 100;
   float temp = 367 * yearVar - 7 * (yearVar + (monthVar + 9) / 12) / 4 + 275 * monthVar / 9 + dayVar - 730530;
 
-	temp = temp + (float)timeInMinutes/(60*24) - (float)UTCalteration/24;	
+	temp = temp + (float)timeInMinutes/(60*24) - (float)UTCalteration/24;
   return temp;
 }		// Transforms a current date and time into the julian date modified
 static float modDecimal (float x, float divisor) {
@@ -317,7 +317,7 @@ static float modDecimal (float x, float divisor) {
       temp = temp - divisor;    //Subtract divisor until temp is within divisor range
     }
   }
-  
+
   return temp;
 }			// Returns a positive decimal modulus remainder
 static float Abs (float x) {
@@ -369,9 +369,9 @@ static float my_sqrt (float a) {
 	// Thanks to http://www.codeproject.com/Articles/570700/SquareplusRootplusalgorithmplusforplusC for a more accurate sqrt algorithm
 	// find more detail of this method on wiki methods_of_computing_square_roots
 	// Babylonian method cannot get exact zero but approximately value of the square_root
-	float z = a; 
+	float z = a;
 	float rst = 0.0;
-	int max = 8;     // to define maximum digit 
+	int max = 8;     // to define maximum digit
 	int i;
 	float j = 1.0;
 	for(i = max ; i > 0 ; i--){
@@ -406,7 +406,7 @@ static float logBase10 (float num) {
 	// Calculates the logarithm of a number to base 10
 	// Thanks to http://fiziko.bureau42.com/teaching_tidbits/manual_logarithms.pdf for the algorithm
 	const uint8_t MAX_ITERATIONS = 20;
-	
+
 	float answer = num;
 	int seed = 0;
 	if (num > 10) {
@@ -422,7 +422,7 @@ static float logBase10 (float num) {
 	} else {
 		seed = 0;			// num is between 1 and 10; ie answer between 0 and 1
 	}
-	
+
 	// Now we are left with seed + log(answer) where answer should be between 1 and 10, and log(answer) will be between 0 and 1
 	// We will work between a lower bound and upper bound which house answer, and log(lBound) < log(answer) < log(uBound) will converge
 	float lBound = 1;
@@ -479,7 +479,7 @@ static float returnOrbitalElement (uint8_t pNum, uint8_t elementNum) {
 				case 5:			//M
 					c = 356.0470;
 					m = 0.9856002585;
-					break;				
+					break;
 			}
 			break;
 		case 1:
@@ -507,7 +507,7 @@ static float returnOrbitalElement (uint8_t pNum, uint8_t elementNum) {
 				case 5:			//M
 					c = 168.6562;
 					m = 4.0923344368;
-					break;				
+					break;
 			}
 			break;
 		case 2:
@@ -535,7 +535,7 @@ static float returnOrbitalElement (uint8_t pNum, uint8_t elementNum) {
 				case 5:			//M
 					c = 48.0052;
 					m = 1.6021302244;
-					break;				
+					break;
 			}
 			break;
 		case 3:
@@ -563,7 +563,7 @@ static float returnOrbitalElement (uint8_t pNum, uint8_t elementNum) {
 				case 5:			//M
 					c = 18.6021;
 					m = 0.5240207766;
-					break;				
+					break;
 			}
 			break;
 		case 4:
@@ -591,7 +591,7 @@ static float returnOrbitalElement (uint8_t pNum, uint8_t elementNum) {
 				case 5:			//M
 					c = 19.895;
 					m = 0.0830853001;
-					break;				
+					break;
 			}
 			break;
 		case 5:
@@ -619,7 +619,7 @@ static float returnOrbitalElement (uint8_t pNum, uint8_t elementNum) {
 				case 5:			//M
 					c = 316.967;
 					m = 0.0334442282;
-					break;				
+					break;
 			}
 			break;
 		case 6:
@@ -701,15 +701,15 @@ static void calculateGlobalVariables () {
 	E = v + w;		// Reappropriate E as lonsun
 	xs = r_sun * Cos(E);
 	ys = r_sun * Sin(E);
-	
+
 	// Next calculate the LST and GMST0
 	e = modDecimal((float)(localTime - UToffset * 60) / 60, 24);		// Calculate the current UT time, Reappropriate e as UTtime
 	GMST0 = modDecimal(w + M + 180, 360);
 	LST = modDecimal(E + 180 + localLng_deg + e * 15, 360);
-	
+
 	// Next calculate the Ms and Mj
 	M_jupiter = returnOrbitalElement(4, 5);
-	M_saturn = returnOrbitalElement(5, 5);	
+	M_saturn = returnOrbitalElement(5, 5);
 }
 static void calculate_RA_Decl (float* RA_calc, float* Decl_calc, float* rh_calc, float* rg_calc) {
 	// Calculates the RA and Decl of a planet and return the values to a pointed address
@@ -720,14 +720,14 @@ static void calculate_RA_Decl (float* RA_calc, float* Decl_calc, float* rh_calc,
 	float temp4 = returnOrbitalElement(planetNumber, 3) * 1000;			// temp4 is a by 1000
 	float temp5 = returnOrbitalElement(planetNumber, 4);			// temp5 is e
 	float temp6 = returnOrbitalElement(planetNumber, 5);			// temp6 is M
-	
+
 	//dispVal(temp1 * 10000, "N (4): ");
 	//dispVal(temp2 * 10000, "i (4): ");
 	//dispVal(temp3 * 10000, "w (4): ");
 	//dispVal(temp4 * 10000, "a (4): ");
 	//dispVal(temp5 * 10000, "e (4): ");
 	//dispVal(temp6 * 10000, "M (4): ");
-	
+
 	// Calculate the planet's distance and true anomaly
 	float temp7 = modDecimal(temp6 + temp5 * (180 / PIconst) * Sin(temp6) * (1.0 + temp5 * Cos(temp6)), 360);			// temp7 is E
 	//dispVal(temp7 * 10000, "E (4): ");
@@ -735,27 +735,27 @@ static void calculate_RA_Decl (float* RA_calc, float* Decl_calc, float* rh_calc,
 	float temp9 = temp4 * (my_sqrt(1.0 - temp5 * temp5) * Sin(temp7));		// temp9 is yv
 	temp7 = modDecimal(arctan2(temp9, temp8) + temp3, 360);				// temp7 is (v + w)
 	*rh_calc = my_sqrt((temp8 * temp8) + (temp9 * temp9));
-	
+
 	//dispVal(temp8 * 10000, "xv (4): ");
 	//dispVal(temp9 * 10000, "yv (4): ");
 	//dispVal(temp7 * 10000, "v+w (4): ");
 	//dispVal(*rh_calc * 10000, "rh (4): ");
-	
+
 	// Calculate the position of the planet in space
 	temp3 = *rh_calc * (Cos(temp1) * Cos(temp7) - Sin(temp1) * Sin(temp7) * Cos(temp2));			// temp3 is xh
 	temp4 = *rh_calc * (Sin(temp1) * Cos(temp7) + Cos(temp1) * Sin(temp7) * Cos(temp2));			// temp4 is yh
 	temp5 = *rh_calc * (Sin(temp7) * Sin(temp2));			// temp5 is zh
-	
+
 	//dispVal(temp3 * 10000, "xh (4): ");
 	//dispVal(temp4 * 10000, "yh (4): ");
 	//dispVal(temp5 * 10000, "zh (4): ");
-	
+
 	// Now logic begins, need to calculate the longitudes and latitudes to be perturbed if on Jupiter, Saturn, or Uranus
 	if (planetNumber == 4 || planetNumber == 5 || planetNumber == 6) {
 		// Have to calculate the lonecl and latecl
 		temp1 = arctan2(temp4, temp3);		// temp1 is lonecl
 		temp2 = arctan2(temp5, my_sqrt(temp3 * temp3 + temp4 * temp4));			// temp2 is latecl
-		
+
 		//Determine the perturbations to be constructed
 		switch (planetNumber) {
 			case 4:
@@ -786,31 +786,31 @@ static void calculate_RA_Decl (float* RA_calc, float* Decl_calc, float* rh_calc,
         temp1 = temp1 - 0.015 * Sin(M_jupiter - temp6 + 20);
 				break;
 		}
-		
+
 		// Revert back to xh, yh, and zh coords
 		temp3 = *rh_calc * Cos(temp1) * Cos(temp2);
 		temp4 = *rh_calc * Sin(temp1) * Cos(temp2);
 		temp5 = *rh_calc * Sin(temp2);
 	}
-	
+
 	// Convert to geocentric position, if planet is sun, this is already that position
 	if (planetNumber != 0) {
 		temp3 = temp3 + xs;
 		temp4 = temp4 + ys;
 	}
-	
+
 	//dispVal(temp3 * 10000, "xg (4): ");
 	//dispVal(temp4 * 10000, "yg (4): ");
 	//dispVal(temp5 * 10000, "zg (4): ");
-	
+
 	// Convert to equitorial coords
 	temp1 = temp4 * Cos(ecl) - temp5 * Sin(ecl);		// temp1 is ye
 	temp2 = temp4 * Sin(ecl) + temp5 * Cos(ecl);		// temp2 is ze
-	
+
 	//dispVal(temp3 * 10000, "xe (4): ");
 	//dispVal(temp1 * 10000, "ye (4): ");
 	//dispVal(temp2 * 10000, "ze (4): ");
-	
+
 	*RA_calc = arctan2(temp1, temp3);
 	*Decl_calc = arctan2(temp2, my_sqrt(temp3 * temp3 + temp1 * temp1));
 	*rg_calc = my_sqrt(temp1 * temp1 + temp2 * temp2 + temp3 * temp3);
@@ -823,7 +823,7 @@ static void calculateViewingData (int16_t* az, int16_t* alt, float RA_val, float
 	float zhor = Sin(Decl_val);
 	float xhor = x * Sin(localLat_deg) - zhor * Cos(localLat_deg);
 	zhor = x * Cos(localLat_deg) + zhor * Sin(localLat_deg);
-	
+
 	*az = modDecimal(arctan2(yhor, xhor) + 180, 360);
 	*alt = arctan2(zhor, my_sqrt(xhor * xhor + yhor * yhor));
 	if (*alt > 180) {
@@ -834,10 +834,10 @@ static float calculateBrightness (float planetRh, float planetRg) {
 	// Returns a planet's brightness
 	float planet_brightness = 0;
 	float FV = arccos((planetRh * planetRh + planetRg * planetRg - r_sun * r_sun) / (2 * planetRh * planetRg));			// Calculate the phase angle
-	
+
 	planetRh = planetRh / 1000;		// Transform the distances back to AU units
 	planetRg = planetRg / 1000;
-	
+
 	switch (planetNumber) {
 		case 0:
 			planet_brightness = -26;		// Sun is the brightess object
@@ -873,7 +873,7 @@ static void calculateRiseSetTimes (float planetRA, float planetDecl, int16_t* pl
 	float h = 360-0.833;		// Height trigger for rise or set
 	float UT_in_south = ((planetRA - GMST0 - localLng_deg) / 15);
 	float LHA = (Sin(h) - Sin(localLat_deg) * Sin(planetDecl)) / (Cos(localLat_deg) * Cos(planetDecl));
-	
+
 	if (LHA > 1) {
 		*planetRise = 3000;			// Error code for no rise
 		*planetSet = 3000;
@@ -884,7 +884,7 @@ static void calculateRiseSetTimes (float planetRA, float planetDecl, int16_t* pl
 		LHA = arccos(LHA) / 15;
 		*planetRise = modDecimal(UT_in_south - LHA + UToffset, 24) * 60;
 		*planetSet = modDecimal(UT_in_south + LHA + UToffset, 24) * 60;
-	}	
+	}
 }
 
 // Display updating functions ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -903,7 +903,7 @@ static void updateCoordsDispLayer(int GPSstatusToDisplay, int16_t passedAngle) {
 	static char coordBuffer[50] = "No GPS data in memory";
 	int8_t dayVar, monthVar;
 	int16_t yearVar;
-	
+
 	switch (GPSstatusToDisplay) {
 		case GPS_AWAITING_DATA:
 			strcpy(coordBuffer, "Awaiting GPS data");
@@ -929,7 +929,7 @@ static void updateCoordsDispLayer(int GPSstatusToDisplay, int16_t passedAngle) {
 			break;
 		default:
 			APP_LOG(APP_LOG_LEVEL_ERROR, "Incorrect display state passed to updateCoordsDispLayer");
-	}	
+	}
 	text_layer_set_text(s_lastCoord_layer, coordBuffer);
 }
 static void updateAstronomyData_planetScreen (int16_t alt, int16_t az, int16_t riseTime, int16_t setTime, float brightMag) {
@@ -939,20 +939,20 @@ static void updateAstronomyData_planetScreen (int16_t alt, int16_t az, int16_t r
 	strcpy(globalBuffer[2], "na");
 	strcpy(globalBuffer[3], "na");
 	strcpy(globalBuffer[4], "Brightness: na");
-	
+
 	if (lastUpdateDate != 0) {
 		snprintf(globalBuffer[2], sizeof(globalBuffer[2]), "%d\n%d:%d%d", alt, riseTime / 60, returnMinTens(riseTime % 60), returnMinOnes(riseTime % 60));
 		snprintf(globalBuffer[3], sizeof(globalBuffer[3]), "%d\n%d:%d%d", az, setTime / 60, returnMinTens(setTime % 60), returnMinOnes(setTime %60));
 		snprintf(globalBuffer[4], sizeof(globalBuffer[4]), "Brightness: %d.%d", (int)brightMag, returnMinOnes(Abs(brightMag) * 10));
 	}
-	
+
 	// Display the data
 	text_layer_set_text(s_belowCoord_layer, planetNamesArr[planetNumber]);
 	text_layer_set_text(s_genericText1_layer, globalBuffer[0]);
 	text_layer_set_text(s_genericText2_layer, globalBuffer[2]);
 	text_layer_set_text(s_genericText4_layer, globalBuffer[1]);
 	text_layer_set_text(s_genericText5_layer, globalBuffer[3]);
-	text_layer_set_text(s_genericText3_layer, globalBuffer[4]);	
+	text_layer_set_text(s_genericText3_layer, globalBuffer[4]);
 }
 static void highlightBrightnessSelection () {
 	// Inverts the planet layer dependent on the planet number
@@ -1050,7 +1050,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   int16_t newLongitude;
   int8_t useNewData = 0;		//Assume using old data until proven otherwise
   int8_t newUToffset;
-	
+
   // Read first item
   Tuple *t;
 	t = dict_read_first(iterator);
@@ -1081,7 +1081,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     // Look for next item
     t = dict_read_next(iterator);
   }		//Transer the incoming information into the stores
-	
+
   // Set the latitude and longitude global variables
   if (useNewData == 0) {
     // No new position data available, use old data
@@ -1098,7 +1098,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 			update_Astronomy();			//Refresh calculations
 		}
 		*/
-		
+
   } else {
     // New position data available, update global variables. Lat, long, and UTC must remain as flexible variables, Rise values can be directly accessed through storage
     // Last update time can be updated to now as well
@@ -1107,7 +1107,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     struct tm *tick_time = localtime(&localSeconds);
     lastUpdateTime = (tick_time->tm_hour) * 60 + (tick_time->tm_min);
     lastUpdateDate = (tick_time->tm_year + 1900) * 10000 + (tick_time->tm_mon + 1) * 100 + tick_time->tm_mday;    //Alterations account for time.h functions
-    
+
     localLat_deg = (float)newLatitude/100;
     localLng_deg = (float)newLongitude/100;
     UToffset = newUToffset;    //Already in hrs
@@ -1135,7 +1135,7 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
 static void update_GPS() {
 	//APP_LOG(APP_LOG_LEVEL_INFO, "Entered update_GPS()");
 	updateCoordsDispLayer(GPS_AWAITING_DATA, 0);		//Redisplay values
-	
+
 	// First increment the number of calls by setting GPScalls to the seed value passed through
 	//GPScalls = nCalls + 1;
   // Begin dictionary
@@ -1172,7 +1172,7 @@ static void accel_data_handler(AccelData *data, uint32_t num_samples) {
 	// Average the samples
 	yG = (yG / num_samples);
 	zG = (zG / num_samples);		// The g force has to be increase by gravity
-	
+
 	// Do the trig to get an angle, the zG is the y axis, and yG is z axis, since adjusted for gravity should give a positive angle - pass straight to the update display
 	updateCoordsDispLayer(DISPLAY_INCLINATION, 270 - arctan2(zG, yG));
 }		// Inclination service handler, displaying the inclination on the coord header
@@ -1220,7 +1220,7 @@ static void up_click_handler (ClickRecognizerRef recognizer, void *context) {
 					updateCoordsDispLayer(DISPLAY_COORDS, 0);
 					break;
 				default:
-					APP_LOG(APP_LOG_LEVEL_ERROR, "Wrong currentHeader value passed");					
+					APP_LOG(APP_LOG_LEVEL_ERROR, "Wrong currentHeader value passed");
 			}
 			break;
 		case WINDOWnum_MENU:
@@ -1258,7 +1258,7 @@ static void middle_click_handler (ClickRecognizerRef recognizer, void *context) 
 			} else {
 				planetNumber--;
 			}
-			populateAstronomyData(false);	
+			populateAstronomyData(false);
 			break;
 		case WINDOWnum_MENU:
 			update_GPS();		// Update GPS was selected
@@ -1290,7 +1290,7 @@ static void down_click_handler (ClickRecognizerRef recognizer, void *context) {
 			} else {
 				planetNumber++;
 			}
-			populateAstronomyData(false);			
+			populateAstronomyData(false);
 			break;
 		case WINDOWnum_MENU:
 			text_layer_set_font(s_belowCoord_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
@@ -1345,7 +1345,7 @@ static void typicalWindowLayer(Window *window) {
 static void init() {
 	// Called when first initialising the app
 	// Holds any persistent layers, as well as creating the different windows
-	
+
 	// Create the constants, initialise global values
 	planetNumber = 0;
 	PIconst = 3.14159265359;		// Set the global constant of pi
@@ -1358,7 +1358,7 @@ static void init() {
 	planetNamesArr[6] = "Uranus";
 	planetNamesArr[7] = "Neptune";
 	aboutBuffer = (char*)malloc(1);
-	
+
 	// Register the callbacks for when a GPS request is made
 	app_message_register_inbox_received(inbox_received_callback);
   app_message_register_inbox_dropped(inbox_dropped_callback);
@@ -1366,7 +1366,7 @@ static void init() {
   app_message_register_outbox_sent(outbox_sent_callback);
 	// Open AppMessage
   app_message_open(APP_MESSAGE_INBOX_SIZE_MINIMUM, APP_MESSAGE_OUTBOX_SIZE_MINIMUM);		//Hopefully the guaranteed size is large enough to carry the data across bluetooth
-  
+
 	//APP_LOG(APP_LOG_LEVEL_INFO, "About to access persistent data");
 	// Initialise some of the global values
   localLat_deg = (float)persist_read_int(LAT_STORED) / 100;
@@ -1375,7 +1375,7 @@ static void init() {
   lastUpdateDate = (int32_t)persist_read_int(LAST_DATE_STORED);
 	lastUpdateTime = (int16_t)persist_read_int(LAST_TIME_STORED);
 	currentHeader = DISPLAY_COORDS;
-	
+
 	//APP_LOG(APP_LOG_LEVEL_INFO, "About to create persistent layers");
 	// Create the persisent layers
 	// Create the GPS coord layer which exists in two different windows	--> Create2
@@ -1383,11 +1383,11 @@ static void init() {
 	typicalTextLayer(s_lastCoord_layer, 2);
 	//APP_LOG(APP_LOG_LEVEL_INFO, "Returned from typicalTextLayer() - about to change the font");
 	text_layer_set_font(s_lastCoord_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-	
+
 	//APP_LOG(APP_LOG_LEVEL_INFO, "About to fill the coords layer");
 	// Fill the GPS coord layer with last known data
 	updateCoordsDispLayer(DISPLAY_COORDS, 0);
-	
+
 	//APP_LOG(APP_LOG_LEVEL_INFO, "About to create the windows");
 	// Create the different windows
 	s_start_window = window_create();		// Create the starting screen window --> Create1
@@ -1396,29 +1396,29 @@ static void init() {
 		.appear = start_window_appear,
 		.disappear = start_window_disappear
 	});		// Set the start window handlers
-	
+
 	s_planet_window = window_create();		// Create the planet screen window --> Create8
 	typicalWindowLayer(s_planet_window);
 	window_set_window_handlers(s_planet_window, (WindowHandlers) {
 		.appear = planet_window_appear,
 		.disappear = planet_window_disappear
 	});		// Set the start window handlers
-	
+
 	s_menu_window = window_create();		// Create the planet screen window --> Create12
 	typicalWindowLayer(s_menu_window);
 	window_set_window_handlers(s_menu_window, (WindowHandlers) {
 		.appear = menu_window_appear,
 		.disappear = menu_window_disappear
 	});		// Set the start window handlers
-	
+
 	s_brightness_window = window_create();		// Create the planet screen window --> Create20
 	typicalWindowLayer(s_brightness_window);
 	window_set_window_handlers(s_brightness_window, (WindowHandlers) {
 		.appear = brightness_window_appear,
 		.disappear = brightness_window_disappear
 	});		// Set the start window handlers
-	
-	
+
+
 	if (persist_read_int(VERSION_NUMBER) != BUILD_NUMBER) {
 		// A new version has been released, show the about screen
 		window_stack_push(s_menu_window, true);		// Show menu window, then force the about selection
@@ -1431,7 +1431,7 @@ static void init() {
 		// Display the start window
 		window_stack_push(s_start_window, true);
 	}
-	
+
 	calculateTimeAstroData();		// Initialise the global variables for the current time
 	// Register to the time tick service
 	tick_timer_service_subscribe(MINUTE_UNIT, time_tick_handler);
